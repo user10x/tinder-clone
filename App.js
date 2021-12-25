@@ -4,7 +4,6 @@ import tw from 'tailwind-rn';
 import StackNavigator from './StackNavigator';
 
 
-
 export default function App() {
   return (
     <NavigationContainer>
