@@ -23,18 +23,25 @@ const  config = {
 export const AuthProvider = ({children}) => {
     const [error, setError] = useState(null);
     const [user, setUser] = useState(null);
-
-  useEffect(()=>{
-      onAuthStateChanged(auth,() =>{
+    const [loadingInitial, setloadingInitial] = useState(true); // blccks the ui in the beggening when the app is loading
+    const [loading, setLoading] = useState(false);
+  useEffect(
+      ()=>
+      onAuthStateChanged(auth,(user) =>{
           if (user){
               setUser(user);
           }else {
               // not logged in
               setUser(null);
           }
-      })
-  },[])
+          setloadingInitial(false);
+      }),[])
+
+  const logout = () => {
+      signOut(auth).catch((error)=>setError(error)).finally(setLoading(false));
+  }
   const signInWithGoogle = async () => {
+      setLoading(true);
       await Google.logInAsync(config).then(async (loginResult) =>{
           if (loginResult.type === "success"){
               //
@@ -44,14 +51,22 @@ export const AuthProvider = ({children}) => {
           }
           return Promise.reject();
       })
-      .catch((error) => setError(error));
+      .catch((error) => setError(error))
+      .finally(()=>setLoading(false))
+      ;
     }
   console.log(user);
   return(
     <AuthContext.Provider
-        value={{user, signInWithGoogle}}
+        value={{
+            user,
+            loading,
+            error,
+            logout,
+            signInWithGoogle}}
     >
-        {children}
+        {/* blocks the ui, maybe load a spashscreen here*/}
+        {!loadingInitial && children}
     </AuthContext.Provider>
   );
 }
