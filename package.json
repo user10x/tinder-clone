@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@firebase/auth": "^0.19.4",
     "@react-navigation/core": "^6.1.0"
   },
   "private": true

@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useState} from 'react'
+import React, {createContext, useContext, useEffect, useMemo, useState} from 'react'
 import * as Google from "expo-google-app-auth";
 
 import {
@@ -18,14 +18,13 @@ const  config = {
     permissions: ["public_profile","email", "gender","location"]
 }
 
-
-
 export const AuthProvider = ({children}) => {
     const [error, setError] = useState(null);
     const [user, setUser] = useState(null);
     const [loadingInitial, setloadingInitial] = useState(true); // blccks the ui in the beggening when the app is loading
     const [loading, setLoading] = useState(false);
-  useEffect(
+  
+    useEffect(
       ()=>
       onAuthStateChanged(auth,(user) =>{
           if (user){
@@ -55,15 +54,24 @@ export const AuthProvider = ({children}) => {
       .finally(()=>setLoading(false))
       ;
     }
-  console.log(user);
-  return(
+  console.debug(user);
+  // use memo to cache for only if the state changes
+  const memoedValue = useMemo(() => ({
+          user,
+          loading,
+          error,
+          signInWithGoogle,
+          logout,
+  }), [
+      // only load memoed values when the state of the following changes
+        user,
+        loading,
+        error,
+      ]);
+
+    return(
     <AuthContext.Provider
-        value={{
-            user,
-            loading,
-            error,
-            logout,
-            signInWithGoogle}}
+        value={memoedValue}
     >
         {/* blocks the ui, maybe load a spashscreen here*/}
         {!loadingInitial && children}

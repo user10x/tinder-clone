@@ -21,7 +21,7 @@ const StackNavigator = () => {
               <Stack.Screen name="Chat" component={ChatScreen} />
               </>
           ):(
-              <Stack.Screen name="Lrogin" component={LoginScreen} />
+              <Stack.Screen name="Login" component={LoginScreen} />
           )
           }
          
